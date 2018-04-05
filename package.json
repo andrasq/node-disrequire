@@ -1,0 +1,14 @@
+{
+  "name": "disrequire",
+  "version": "0.0.0",
+  "description": "undo a require",
+  "main": "index.js",
+  "keywords": [ "unrequire", "disrequire", "undo", "require" ],
+  "repository": "https://github.com/andrasq/node-disrequire.git#readme",
+  "author": "Andras",
+  "license": "Apache-2.0",
+
+  "scripts": {
+    "test": "qnit test-disrequire.js"
+  }
+}
