@@ -1,14 +1,21 @@
 {
   "name": "disrequire",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "undo a require",
-  "main": "index.js",
+  "main": "unrequire.js",
   "keywords": [ "unrequire", "disrequire", "undo", "require" ],
   "repository": "https://github.com/andrasq/node-disrequire.git#readme",
   "author": "Andras",
   "license": "Apache-2.0",
 
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+
   "scripts": {
-    "test": "qnit test-disrequire.js"
+    "test": "qnit test-*.js",
+    "coverage": "nyc -r lcov -r text npm test",
+    "clean": "rm -rf .nyc_output ./coverage/"
   }
 }

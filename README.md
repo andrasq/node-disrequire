@@ -6,11 +6,12 @@ placeholder for `qmock.unrequire`
 This package will export a function to undo the side-effects of a `require()`.
 All copies of the module cached by nodejs will be discarded.
 
-This function is called `unrequire` in `qmock`, but that package name is not
-available.
+This function is called `unrequire` in `qmock`, but the "unrequire" package name
+is not available.
 
     const unrequire = require('disrequire');
     unrequire('config');
+
 
 Related Work
 ------------
