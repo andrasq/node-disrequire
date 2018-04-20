@@ -60,6 +60,22 @@ module.exports = {
         t.ok(!findCachedModule('mockmod'));
         t.done();
     },
+
+    'should tolerate modules that are not loaded': function(t) {
+        unrequire('nonesuch');
+        t.done();
+    },
+
+    'should error out unloading files that are not found': function(t) {
+        t.throws(function(){ unrequire('/none/such') }, /Cannot find module/);
+        t.done();
+    },
+
+    'should unload module by $cwd-relative path if cannot parse stack': function(t) {
+        t.stubOnce(Error, 'captureStackTrace', function(obj, func){ obj.stack = "Error: mock error\n  some line 1\n  other line 2\n"; });
+        t.throws(function(){ unrequire('./none/such/2') }, new RegExp('Cannot find module \'' + process.cwd()) + '/./none/such/2\'');
+        t.done();
+    },
 };
 
 function findCachedModule( name, children ) {
