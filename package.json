@@ -14,6 +14,7 @@
   },
 
   "scripts": {
+    "pretest": "test -d node_modules/mockmod || mkdir -p node_modules node_modules/mockmod && echo '{ \"name\": \"mockmod\" }' > node_modules/mockmod/package.json && echo 'exports = \"mock module\";' > node_modules/mockmod/index.js",
     "test": "qnit test-*.js",
     "coverage": "nyc -r lcov -r text npm test",
     "clean": "rm -rf .nyc_output ./coverage/"
