@@ -7,6 +7,7 @@ node_js:
   - 7
   - 8
   - 9
+  - 10 
 before_install:
   - npm install -g qnit
   - npm install -g npm@2.15.0          # npm 5.6.0 removes ./node_modules and breaks the tests
