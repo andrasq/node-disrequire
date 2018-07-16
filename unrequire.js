@@ -1,5 +1,5 @@
 /**
- * unrequire() from qmock v0.24.0
+ * unrequire() from qmock v0.13.1
  *
  * 2018-04-05 - AR.
  */

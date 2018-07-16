@@ -1,5 +1,5 @@
 /**
- * test-mockRequire from qmock v0.24.0
+ * test-mockRequire from qmock v0.13.1
  *
  * Copyright (C) 2018 Andras Radics
  * Licensed under the Apache License, Version 2.0
