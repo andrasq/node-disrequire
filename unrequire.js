@@ -5,7 +5,7 @@
  */
 
 module.exports = unrequire;
-module.exports.resolveOrSelv = resolveOrSelf;
+module.exports.resolveOrSelf = resolveOrSelf;
 
 var Path = require('path');
 

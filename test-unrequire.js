@@ -11,6 +11,12 @@ var unrequire = require('./');
 var mockRequire = { unrequire: unrequire };
 
 module.exports = {
+    'should export expected functions': function(t) {
+        t.equal(typeof unrequire, 'function');
+        t.equal(typeof unrequire.resolveOrSelf, 'function');
+        t.done();
+    },
+
     'should remove all instances of the module': function(t) {
         var url = require('./package');
         var mod = findCachedModule('./package');
