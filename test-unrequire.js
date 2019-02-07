@@ -7,10 +7,26 @@
 
 'use strict';
 
+var fs = require('fs');
+var child_process = require('child_process');
 var unrequire = require('./');
 var mockRequire = { unrequire: unrequire };
 
 module.exports = {
+    before: function(done) {
+        // create the mock module the tests look for
+        child_process.exec("mkdir -p node_modules/mockmod", function(err) {
+            if (err) return done(err);
+            fs.writeFileSync('node_modules/mockmod/package.json', '{\n  "name": "mockmod"\n}\n');
+            fs.writeFileSync('node_modules/mockmod/index.js', 'module.exports = "mock module";');
+            done();
+        })
+    },
+
+    after: function(done) {
+        child_process.exec('rm -rf node_modules', done);
+    },
+
     'should export expected functions': function(t) {
         t.equal(typeof unrequire, 'function');
         t.equal(typeof unrequire.resolveOrSelf, 'function');
