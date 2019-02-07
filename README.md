@@ -17,6 +17,13 @@ is not available.
     unrequire('config');
 
 
+Changelog
+---------
+
+- 1.0.3 - make tests create the test module, remove node_modules from repo
+- 1.0.2 - fix typo in exported `resolveOrSelv`
+- 1.0.1 - split out of `qmock`
+
 Related Work
 ------------
 
