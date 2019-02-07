@@ -6,23 +6,36 @@
 
 module.exports = unrequire;
 module.exports.resolveOrSelf = resolveOrSelf;
+module.exports.findCallingFile = findCallingFile;
 
 var Path = require('path');
+
+// search for the first caller with a filepath (ie running from a file)
+// NOTE: Named functions show up as "  at <name> (/file/path:line:col)" or ",
+//       functions without a name as "  at /file/path:line:col".
+// NOTE: the stack trace is ambiguous: function names and pathnames are indistinguishable:
+//   Error: stack trace
+//      at bar (/file/path/name/t.js:1:92)
+//      at Object.foo(/ (/bar (/file/path/name/t.js:2:39)
+//      at foo (/file/path/name/t.js:3:34)
+//   Is that function 'foo(/ (/bar' in directory /file/, or function 'foo(/' in directory '/bar (/'?
+//   Both are valid.  We choose to favor /file/ and disallow parentheses inside the filepath.
+//   (this particular test called foo() => h['foo(/ (/bar']() => bar(), fyi).
+function findCallingFile( stack ) {
+    do {
+        var caller = stack.shift();
+        var match = /^\s+at ([^/].* )?[(]?(\/[^()]*):\d+:\d+[)]?$/.exec(caller);
+    } while (!match && stack.length > 0);
+    return match && match[2];
+}
 
 function resolveOrSelf( name, calledFunc ) {
     var moduleName = name;
 
     // resolve relative paths against the source directory of the calling function
     if (/^[.][/]|^[.][.][/]/.test(moduleName)) {
-        var stack = getCallerStack(calledFunc);
-        do {
-            // search for the first caller with an absolute filepath
-            var caller = stack.shift();
-            var match = /^[^/]* [(](\/[^()]*):\d+:\d+[)]$/m.exec(caller);
-            // note: require parentheses around the filepath, for "  at /some /arbitrary /nodeunit test function name (/unit/test/path.js:12:34)"
-            // note: we disallow parentheses inside the filepath, but that could break the mock in some cases
-        } while (!match && stack.length > 0);
-        var callerDir = !match ? process.cwd() : Path.dirname(match[1]);
+        var callerFile = findCallingFile(getCallerStack(calledFunc));
+        var callerDir = callerFile ? Path.dirname(callerFile) : process.cwd();
         moduleName = callerDir + '/' + moduleName;
     }
 
@@ -33,7 +46,7 @@ function resolveOrSelf( name, calledFunc ) {
     // This also sort of how require() behaves.
     if (moduleName[0] === '/') return require.resolve(moduleName);
 
-    // tolerate failure to resolve modules, those error out when loaded
+    // tolerate failure to resolve modules, those error out when actually loaded
     try { return require.resolve(moduleName) }
     catch (e) { return moduleName }
 }

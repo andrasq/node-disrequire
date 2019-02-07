@@ -8,28 +8,31 @@
 'use strict';
 
 var fs = require('fs');
-var child_process = require('child_process');
 var unrequire = require('./');
 var mockRequire = { unrequire: unrequire };
 
 module.exports = {
     before: function(done) {
         // create the mock module the tests look for
-        child_process.exec("mkdir -p node_modules/mockmod", function(err) {
-            if (err) return done(err);
-            fs.writeFileSync('node_modules/mockmod/package.json', '{\n  "name": "mockmod"\n}\n');
-            fs.writeFileSync('node_modules/mockmod/index.js', 'module.exports = "mock module";');
-            done();
-        })
+        fs.mkdirSync('node_modules');
+        fs.mkdirSync('node_modules/mockmod');
+        fs.writeFileSync('node_modules/mockmod/package.json', '{\n  "name": "mockmod"\n}\n');
+        fs.writeFileSync('node_modules/mockmod/index.js', 'module.exports = "mock module";');
+        done();
     },
 
     after: function(done) {
-        child_process.exec('rm -rf node_modules', done);
+        fs.unlinkSync('node_modules/mockmod/index.js');
+        fs.unlinkSync('node_modules/mockmod/package.json');
+        fs.rmdirSync('node_modules/mockmod');
+        fs.rmdirSync('node_modules');
+        done();
     },
 
     'should export expected functions': function(t) {
         t.equal(typeof unrequire, 'function');
         t.equal(typeof unrequire.resolveOrSelf, 'function');
+        t.equal(typeof unrequire.findCallingFile, 'function');
         t.done();
     },
 
@@ -97,6 +100,36 @@ module.exports = {
         t.stubOnce(Error, 'captureStackTrace', function(obj, func){ obj.stack = "Error: mock error\n  some line 1\n  other line 2\n"; });
         t.throws(function(){ unrequire('./none/such/2') }, new RegExp('Cannot find module \'' + process.cwd()) + '/./none/such/2\'');
         t.done();
+    },
+
+    'findCallingFile': {
+        'should find file of anonymous function': function(t) {
+            var stack = [ 'Error', '  at Object.<anonymous> (module.js:100:20)', '  at /path/name:101:21', '  at /otherpath:1:2' ];
+            var caller = unrequire.findCallingFile(stack);
+            t.equal(caller, '/path/name');
+            t.done();
+        },
+
+        'should find file of named function': function(t) {
+            var stack = [ 'Error', '  at Object.<anonymous> (module.js:100:20)', '  at funcName (/path/name:101:21)', '  at /otherpath:1:2' ];
+            var caller = unrequire.findCallingFile(stack);
+            t.equal(caller, '/path/name');
+            t.done();
+        },
+
+        'should find file of hashed function whose name contains punctuation': function(t) {
+            var stack = [ 'Error', '  at Object.<anonymous> (module.js:100:20)', '  at Object.(func(/ * (/tion (/path/name:101:21)', '  at /otherpath:1:2' ];
+            var caller = unrequire.findCallingFile(stack);
+            t.equal(caller, '/path/name');
+            t.done();
+        },
+
+        'should find file containing spaces': function(t) {
+            var stack = [ 'Error', '  at Object.<anonymous> (module.js:100:20)', '  at /path /name:101:21', '  at /otherpath:1:2' ];
+            var caller = unrequire.findCallingFile(stack);
+            t.equal(caller, '/path /name');
+            t.done();
+        },
     },
 };
 
