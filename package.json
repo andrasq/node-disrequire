@@ -1,6 +1,6 @@
 {
   "name": "disrequire",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "undo a require",
   "main": "unrequire.js",
   "keywords": [ "unrequire", "disrequire", "undo", "require" ],
