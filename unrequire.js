@@ -24,8 +24,10 @@ module.exports.findCallingFile = findCallingFile;
 var Path = require('path');
 
 // search for the first caller with a filepath (ie running from a file)
-// NOTE: Named functions show up as "  at <name> (/file/path:line:col)" or ",
-//       functions without a name as "  at /file/path:line:col".
+// NOTE: Named functions show up as  "  at <name> (/file/path:line:col)",
+//       functions without a name as "  at /file/path:line:col",
+//       named methods as            "  at Classname.<methodName> (/file/path:line:col)",
+//       anon methods as             "  at Classname.<property name> (/file/path:line:col)".
 // NOTE: the stack trace is ambiguous: function names and pathnames are indistinguishable:
 //   Error: stack trace
 //      at bar (/file/path/name/t.js:1:92)
@@ -34,6 +36,13 @@ var Path = require('path');
 //   Is that function 'foo(/ (/bar' in directory /file/, or function 'foo(/' in directory '/bar (/'?
 //   Both are valid.  We choose to favor /file/ and disallow parentheses inside the filepath.
 //   (this particular test called foo() => h['foo(/ (/bar']() => bar(), fyi).
+// Sample stack:
+//   '    at Object.should remove module when attached to another object (/hd1/home/andras/node/git/disrequire/test-unrequire.js:62:20)',
+//   '    at /hd1/home/andras/lib/node_modules/qnit/lib/qnit.js:448:32',
+//   '    at /hd1/home/andras/lib/node_modules/qnit/node_modules/aflow/lib/qflow.js:109:13',
+//   '    at _invokeCallback (/hd1/home/andras/lib/node_modules/qnit/node_modules/aflow/lib/qflow.js:49:20)',
+//   '    at applyFunc (/hd1/home/andras/lib/node_modules/qnit/node_modules/aflow/lib/qflow.js:103:50)',
+//   '    at _loop (/hd1/home/andras/lib/node_modules/qnit/node_modules/aflow/lib/qflow.js:62:13)',
 function findCallingFile( stack ) {
     do {
         var caller = stack.shift();
