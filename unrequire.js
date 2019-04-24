@@ -83,6 +83,7 @@ function unrequire( moduleName ) {
     // the topmost module has no parent
     while (module.parent) module = module.parent;
     unlinkAll(module.children, mod);
+    unmarkAll(module.children);
 
     function unlinkAll( children, mod ) {
         // fast-path leaf modules without children
@@ -97,7 +98,15 @@ function unrequire( moduleName ) {
         for (var i=0; i<children.length; i++) {
             unlinkAll(children[i].children, mod);
         }
-        delete children._qmock_visited;
+    }
+
+    function unmarkAll( children ) {
+        if (children._qmock_visited) {
+            delete children._qmock_visited;
+            for (var i=0; i<children.length; i++) {
+                unmarkAll(children[i].children);
+            }
+        }
     }
 }
 

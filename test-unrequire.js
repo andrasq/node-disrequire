@@ -134,10 +134,10 @@ module.exports = {
 };
 
 function findCachedModule( name, children ) {
-    var root, path = require.resolve(name);
+    var path = (name[0] === '/') ? name : require.resolve(name);
 
     if (!children) {
-        root = module;
+        var root = module;
         while (root.parent) root = root.parent;
         children = root.children;
     }
