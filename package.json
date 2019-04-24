@@ -1,6 +1,6 @@
 {
   "name": "disrequire",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "undo a require",
   "main": "unrequire.js",
   "keywords": [ "unrequire", "disrequire", "undo", "require" ],
@@ -8,6 +8,7 @@
   "readme": "see the README at https://github.com/andrasq/node-disrequire",
   "author": "Andras",
   "license": "Apache-2.0",
+  "files": [ "unrequire.js", "README.md", "LICENSE" ],
 
   "dependencies": {
   },

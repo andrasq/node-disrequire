@@ -131,6 +131,42 @@ module.exports = {
             t.done();
         },
     },
+
+    'disrequire.quick': {
+        beforeEach: function(done) {
+            // mock up a package file load
+            var mod = this.mod = {
+                id: 'x-test',
+                exports: {},
+                parent: null,
+                filename: '/some/file/path/x-test.js',
+                loaded: true,
+                children: [],
+                paths: [],
+            };
+            require.cache['x-test'] = mod;
+            done();
+        },
+
+        'should unload file from module that loaded it': function(t) {
+            var mod = this.mod;
+            // pretend that it was loaded by the module that loaded us (our parent module)
+            mod.parent = module.parent;
+            module.parent.children.push(mod);
+            unrequire.quick('x-test');
+            t.ok(!require.cache['x-test']);
+            t.ok(module.parent.children.indexOf(mod) < 0);
+            t.done();
+        },
+
+        'should unload module with no parent': function(t) {
+            var mod = this.mod;
+            delete mod.parent;
+            unrequire.quick('x-test');
+            t.ok(!require.cache['x-test']);
+            t.done();
+        },
+    },
 };
 
 function findCachedModule( name, children ) {

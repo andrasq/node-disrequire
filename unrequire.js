@@ -20,6 +20,7 @@
 module.exports = unrequire;
 module.exports.resolveOrSelf = resolveOrSelf;
 module.exports.findCallingFile = findCallingFile;
+module.exports.quick = disrequireQuick;
 
 var Path = require('path');
 
@@ -106,6 +107,20 @@ function unrequire( moduleName ) {
             for (var i=0; i<children.length; i++) {
                 unmarkAll(children[i].children);
             }
+        }
+    }
+}
+
+// disrequire module known to be loaded from a single place only
+function disrequireQuick( moduleName ) {
+    var path = resolveOrSelf(moduleName, disrequireQuick);
+    var mod = require.cache[path];
+    delete require.cache[path];
+
+    if (mod && mod.parent) {
+        var ix, children = mod.parent.children;
+        while ((ix = children.indexOf(mod)) >= 0) {
+            children.splice(ix, 1);
         }
     }
 }

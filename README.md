@@ -10,24 +10,48 @@ This package exports a function to undo the side-effects of a `require()`.
 All cached copies of an external nodejs module loaded with `require` will be discarded.
 Built-in modules such as `http` do not have separate cached copies, and are not unloaded.
 
-This function is called `unrequire()` in `qmock`, but the "unrequire" package name
-is not available.
+    const disrequire = require('disrequire');
+    disrequire('config');
 
-    const unrequire = require('disrequire');
-    unrequire('config');
+
+Api
+---
+
+### disrequire( packageName )
+
+Unload the named package from all `require` caches.  The package is removed from
+`require.cache` and from every `module.children[]` in which it occurs.  Built-in modules
+like `http` are not unloaded.
+
+    const disrequire = require('disrequire');
+    disrequire('config');
+
+### disrequire.quick( packageName )
+
+Shallow unload a single copy of the named package from the `require` caches.  The package is
+removed from `require.cache` and from the module that loaded it, ie
+`require.cache[require.resove(packageName)].parent.children[]`.
+
+If it is known that only one module loaded the package, it is much faster to not have to
+walk the module tree searching for other locations.
+
+    const disrequire = require('disrequire');   // now you see it
+    disrequire.quick('disrequire');             // now you dont
 
 
 Changelog
 ---------
 
+- 1.1.0 - new `disrequire.quick()` shallow unload
 - 1.0.5 - speed up disrequire() with many cross-linked modules
 - 1.0.4 - fix resolveOrSelf for anonymous functions
 - 1.0.3 - make tests create the test module, remove node_modules from repo
 - 1.0.2 - fix typo in exported `resolveOrSelv`
 - 1.0.1 - split out of `qmock`
 
+
 Related Work
 ------------
 
 - [`qmock`](https://npmjs.com/package/qmock) - various useful mocks and stubs,
-  including for node system functions
+  including mocks for node system functions
