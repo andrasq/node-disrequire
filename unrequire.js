@@ -76,6 +76,9 @@ function unrequire( moduleName ) {
     unlinkAll(module.children, mod);
 
     function unlinkAll( children, mod ) {
+        // fast-path leaf modules without children
+        if (!children.length) return;
+
         // node-v6 does not have cycles, node-v8 does
         if (children._qmock_visited) return;
         while ((ix = children.indexOf(mod)) >= 0) {
