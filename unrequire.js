@@ -4,6 +4,19 @@
  * 2018-04-05 - AR.
  */
 
+/*
+    `require.cache` is a hash mapping filepath to module
+
+    each module has parts
+      id:       filepath
+      exports:  module.exports object
+      parent:   module that loaded it (circular)
+      filename: filepath
+      loaded:   flag indicating whether module load finished yet
+      children: array of modules that it loaded
+      paths:    array of paths for require.resolve to check, innermost first
+*/
+
 module.exports = unrequire;
 module.exports.resolveOrSelf = resolveOrSelf;
 module.exports.findCallingFile = findCallingFile;
@@ -58,6 +71,7 @@ function unrequire( moduleName ) {
     var ix, mod = require.cache[path];
     delete require.cache[path];
 
+    // the topmost module has no parent
     while (module.parent) module = module.parent;
     unlinkAll(module.children, mod);
 
