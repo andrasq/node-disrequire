@@ -42,6 +42,7 @@ walk the module tree searching for other locations.
 Changelog
 ---------
 
+- 1.1.1 - fix global leak of name `stack`
 - 1.1.0 - new `disrequire.quick()` shallow unload
 - 1.0.5 - speed up disrequire() with many cross-linked modules
 - 1.0.4 - fix resolveOrSelf for anonymous functions
