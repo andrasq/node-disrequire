@@ -14,7 +14,7 @@ var mockRequire = { unrequire: unrequire };
 module.exports = {
     before: function(done) {
         // create the mock module the tests look for
-        fs.mkdirSync('node_modules');
+        try { fs.mkdirSync('node_modules') } catch (e) {}
         fs.mkdirSync('node_modules/mockmod');
         fs.writeFileSync('node_modules/mockmod/package.json', '{\n  "name": "mockmod"\n}\n');
         fs.writeFileSync('node_modules/mockmod/index.js', 'module.exports = "mock module";');
