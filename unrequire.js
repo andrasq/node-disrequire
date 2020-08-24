@@ -128,7 +128,7 @@ function disrequireQuick( moduleName ) {
 function getCallerStack( calledFunc ) {
     var trace = {};
     Error.captureStackTrace(trace, calledFunc);
-    stack = trace.stack.split('\n');
+    var stack = trace.stack.split('\n');
     stack.shift();
     return stack;
 }
