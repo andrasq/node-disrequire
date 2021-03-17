@@ -1,6 +1,9 @@
 /**
  * unrequire() from qmock v0.13.1
  *
+ * Copyright (C) 2018-2021 Andras Radics
+ * Licensed under the Apache License, Version 2.0
+ *
  * 2018-04-05 - AR.
  */
 
@@ -126,9 +129,22 @@ function disrequireQuick( moduleName ) {
 }
 
 function getCallerStack( calledFunc ) {
-    var trace = {};
+    var savedPrepare = Error.prepareStackTrace;
+    var savedLimit = Error.stackTraceLimit;
+
+    Error.stackTraceLimit = 9999;
+    Error.prepareStackTrace = function(obj, stack) {
+        // the raw stack is an array of objects that map to func:line:col strings
+        for (var i=0; i<stack.length; i++) stack[i] = '    at ' + stack[i];
+        return stack; };
+    var trace = { stack: null };
     Error.captureStackTrace(trace, calledFunc);
-    var stack = trace.stack.split('\n');
-    stack.shift();
+
+    // NOTE: the added .trace getter calls Error.prepareStackTrace when
+    // the stack is read, so read it before restoring savedPrepare.
+    var stack = trace.stack;
+
+    Error.prepareStackTrace = savedPrepare;
+    Error.stackTraceLimit = savedLimit;
     return stack;
 }
