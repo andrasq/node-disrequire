@@ -133,10 +133,7 @@ function getCallerStack( calledFunc ) {
     var savedLimit = Error.stackTraceLimit;
 
     Error.stackTraceLimit = 9999;
-    Error.prepareStackTrace = function(obj, stack) {
-        // the raw stack is an array of objects that map to func:line:col strings
-        for (var i=0; i<stack.length; i++) stack[i] = '    at ' + stack[i];
-        return stack; };
+    Error.prepareStackTrace = linesAt;
     var trace = { stack: null };
     Error.captureStackTrace(trace, calledFunc);
 
@@ -148,3 +145,5 @@ function getCallerStack( calledFunc ) {
     Error.stackTraceLimit = savedLimit;
     return stack;
 }
+// the raw stack is an array of objects that convert to func:line:col strings
+function linesAt(obj, stack) { for (var i=0; i<stack.length; i++) stack[i] = '    at ' + stack[i]; return stack }
