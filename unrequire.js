@@ -140,7 +140,7 @@ function getCallerStack( calledFunc ) {
     var trace = {};
 
     /* istanbul ignore next */
-    if (nodeVersion < 0.7) {
+    if (nodeVersion >= 0.2 && nodeVersion < 0.7) {
         // The node-v0.6 prepareStackTrace behaves weirdly, so recover the call stack
         // from the stack string.  On newer node use prepareStackTrace for source map support
         // (though the specifics now escape me).
