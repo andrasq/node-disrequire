@@ -189,5 +189,9 @@ function findCachedModule( name, children ) {
         if (mod) break;
     }
     delete children._qmock_visited;
+
+    // NOTE: node-v0.6 does not seem to populate module.children, find the module in the cache
+    if (!mod) mod = require.cache[require.resolve(name)];
+
     return mod;
 }

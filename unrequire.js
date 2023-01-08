@@ -1,11 +1,13 @@
 /**
  * unrequire() from qmock v0.13.1
  *
- * Copyright (C) 2018-2021 Andras Radics
+ * Copyright (C) 2018-2023 Andras Radics
  * Licensed under the Apache License, Version 2.0
  *
  * 2018-04-05 - AR.
  */
+
+'use strict';
 
 /*
     `require.cache` is a hash mapping filepath to module
@@ -25,6 +27,7 @@ module.exports.resolveOrSelf = resolveOrSelf;
 module.exports.findCallingFile = findCallingFile;
 module.exports.quick = disrequireQuick;
 
+var nodeVersion = parseFloat(process.versions.node);
 var Path = require('path');
 
 // search for the first caller with a filepath (ie running from a file)
@@ -128,16 +131,28 @@ function disrequireQuick( moduleName ) {
     }
 }
 
+// return the array of call frames up to but not including the calledFunc
 function getCallerStack( calledFunc ) {
     var savedPrepare = Error.prepareStackTrace;
     var savedLimit = Error.stackTraceLimit;
 
     Error.stackTraceLimit = 9999;
+    var trace = {};
+
+    /* istanbul ignore next */
+    if (nodeVersion < 0.7) {
+        // The node-v0.6 prepareStackTrace behaves weirdly, so recover the call stack
+        // from the stack string.  On newer node use prepareStackTrace for source map support
+        // (though the specifics now escape me).
+        Error.captureStackTrace(trace, calledFunc);
+        Error.stackTraceLimit = savedLimit;
+        return trace.stack.split('\n');
+    }
+
     Error.prepareStackTrace = linesAt;
-    var trace = { stack: null };
     Error.captureStackTrace(trace, calledFunc);
 
-    // NOTE: the added .trace getter calls Error.prepareStackTrace when
+    // NOTE: the added .stack getter calls Error.prepareStackTrace when
     // the stack is read, so read it before restoring savedPrepare.
     var stack = trace.stack;
 

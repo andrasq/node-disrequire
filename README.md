@@ -42,6 +42,7 @@ walk the module tree searching for other locations.
 Changelog
 ---------
 
+- 1.1.3 - fix to work under node-v0.6 which broke with 1.1.2
 - 1.1.2 - fix for use with source maps
 - 1.1.1 - fix global leak of name `stack`
 - 1.1.0 - new `disrequire.quick()` shallow unload
