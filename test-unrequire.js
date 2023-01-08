@@ -25,6 +25,7 @@ module.exports = {
         fs.unlinkSync('node_modules/mockmod/index.js');
         fs.unlinkSync('node_modules/mockmod/package.json');
         fs.rmdirSync('node_modules/mockmod');
+        try { fs.rmdirSync('node_modules') } catch (e) {}
         done();
     },
 
