@@ -15,7 +15,7 @@ module.exports = {
     before: function(done) {
         // create the mock module the tests look for
         try { fs.mkdirSync('node_modules') } catch (e) {}
-        fs.mkdirSync('node_modules/mockmod');
+        try { fs.mkdirSync('node_modules/mockmod') } catch (e) {}
         fs.writeFileSync('node_modules/mockmod/package.json', '{\n  "name": "mockmod"\n}\n');
         fs.writeFileSync('node_modules/mockmod/index.js', 'module.exports = "mock module";');
         done();
@@ -25,7 +25,6 @@ module.exports = {
         fs.unlinkSync('node_modules/mockmod/index.js');
         fs.unlinkSync('node_modules/mockmod/package.json');
         fs.rmdirSync('node_modules/mockmod');
-        fs.rmdirSync('node_modules');
         done();
     },
 
