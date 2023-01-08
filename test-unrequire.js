@@ -97,8 +97,10 @@ module.exports = {
     },
 
     'should unload module by $cwd-relative path if cannot parse stack': function(t) {
-        t.stubOnce(Error, 'captureStackTrace', function(obj, func){ obj.stack = "Error: mock error\n  some line 1\n  other line 2\n"; });
-        t.throws(function(){ unrequire('./none/such/2') }, new RegExp('Cannot find module \'' + process.cwd()) + '/./none/such/2\'');
+        // getCallerStack patches Error to have captureStackTrace return an array of lines, mock that
+        var mockStackTrace = ["Error: mock error", "  some line 1", "  other line 2"];
+        t.stubOnce(Error, 'captureStackTrace', function(obj, func){ obj.stack = mockStackTrace });
+        t.throws(function(){ unrequire('./none/such/2') }, new RegExp('Cannot find module \'' + process.cwd() + '/./none/such/2\''));
         t.done();
     },
 
